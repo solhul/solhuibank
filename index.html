@@ -317,8 +317,12 @@ function loadSelect(){
   nameText.style.position = 'absolute';
   nameText.style.left = '850px';
   nameText.style.top = '310px';
-  nameText.style.fontSize = '38px';
+  nameText.style.fontSize = '120px';
   nameText.style.fontWeight = 'bold';
+  nameTag.style.backgroundColor = "rgba(255,255,255,0.7)";
+  nameTag.style.borderRadius = "20px";
+  nameTag.style.padding = "6px 20px";
+  nameTag.style.textAlign = "center";
   screen.appendChild(nameText);
   createClickableArea(450,580,850,870,loadInput);
   createClickableArea(870,580,1250,870,loadInput);
@@ -373,4 +377,5 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
+
 
