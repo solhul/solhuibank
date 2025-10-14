@@ -11,6 +11,16 @@
     overflow: hidden;
     background-color: #004d40;
   }
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #004d40;
+  }
 
   body {
     display: flex;
@@ -22,21 +32,54 @@
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-size: contain; /* 핵심: 비율 유지하면서 전체 표시 */
+    background-size: contain;
     background-repeat: no-repeat;
-    background-position: center center;
-    transform-origin: center center;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  /* 중앙 정렬을 유지하기 위해 요소를 % 단위로 배치 */
+  .input-area, .keypad, .buttons {
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+
+  .input-area {
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    text-align: center;
+  }
+
+  .keypad {
+    bottom: 10%;
+    left: 50%;
+  }
+
+  .buttons {
+    bottom: 5%;
+    left: 50%;
+  }
+
+  input, button {
+    font-size: 2vw;
+    padding: 1vw;
+    border: none;
+    border-radius: 1vw;
+  }
+
+  button {
+    background-color: #fdd835;
+    color: #004d40;
+    font-weight: bold;
   }
 
   @media (orientation: portrait) {
-    #screen {
-      transform: rotate(0deg);
-    }
-  }
-
-  @media (orientation: landscape) {
-    #screen {
-      transform: rotate(0deg);
+    input, button {
+      font-size: 3vw;
     }
   }
 </style>
@@ -382,5 +425,6 @@ loadWait();
 </script>
 </body>
 </html>
+
 
 
