@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, height=1080" />
+<title>한빛은행 시뮬레이터 - FINAL (이름크기조정)</title>
+<style>
+  body { margin: 0; overflow: hidden; background-color: black; }
+  #screen { position: relative; width: 1920px; height: 1080px; background-size: cover; background-position: center; }
+  .clickable { position: absolute; cursor: pointer; background: rgba(0,0,0,0); }
+
+  /* 이름 선택 박스 */
+  #nameList {
+    position: absolute;
+    left: 555px;
+    top: 615px;
+    width: 810px;
+    height: 270px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    justify-items: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  #nameList button {
+    width: 120px;
+    height: 60px;
+    font-size: 22px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(255,255,255,0.85);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  #nameList button:hover {
+    background-color: #ffeb3b;
+    transform: scale(1.05);
+  }
+
+  /* 키패드 */
+  #keypad {
+    position: absolute;
+    width: 560px;
+    height: 590px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    justify-items: center;
+    align-items: center;
+    z-index: 10;
+  }
+  #keypad button {
+    width: 100px;
+    height: 100px;
+    font-size: 36px;
+    border-radius: 12px;
+    border: 2px solid #999;
+    background: rgba(255,255,255,0.9);
+    cursor: pointer;
+    transition: transform .15s, background .15s;
+  }
+  #keypad button:hover {
+    background: #ffeb3b;
+    transform: scale(1.05);
+  }
+
+  #passwordBoxes { position: absolute; z-index: 30; pointer-events: none; }
+  .pw-box {
+    position: absolute;
+    width: 140px; height: 140px;
+    text-align: center;
+    font-size: 80px;
+    font-weight: bold;
+    color: #000;
+    background: transparent;
+  }
+
+  #message {
+    position: absolute;
+    width: 600px;
+    text-align: center;
+    font-size: 36px;
+    color: red;
+    font-weight: bold;
+    z-index: 40;
+    line-height: 1.5;
+  }
+  .blink { animation: blinkRed 0.3s ease-in-out 3; }
+  @keyframes blinkRed {
+    0%,100%{ color: red; } 50%{ color: #ff8a8a; }
+  }
+
+  #display {
+    position: absolute;
+    color: black;
+    font-size: 192px;
+    font-weight: bold;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="screen"></div>
+
+<script>
+const screen = document.getElementById('screen');
+let selectedName = '';
+let password = '';
+let amount = '';
+
+const userList = [
+  "강유진","김아랑","김연호","김유나","김채아","김하린",
+  "박나은","박시아","박재이","박지한","서시안","신서율",
+  "안서현","왕동규","유서원","유하준","이서은","임단비",
+  "장건우","장하나","정루아","정윤","정하윤","최설아","황이솔"
+];
+const passwords = {
+  "강유진": "1234",
+  "김아랑": "5678",
+  "김연호": "1357",
+  "김유나": "2468",
+  "김채아": "1111",
+  "김하린": "2222",
+  "박나은": "3333",
+  "박시아": "4444",
+  "박재이": "5555",
+  "박지한": "6666",
+  "서시안": "7777",
+  "신서율": "8888",
+  "안서현": "9999",
+  "왕동규": "0000",
+  "유서원": "1212",
+  "유하준": "3434",
+  "이서은": "5656",
+  "임단비": "7878",
+  "장건우": "9090",
+  "장하나": "9990",
+  "정루아": "8080",
+  "정윤": "7070",
+  "정하윤": "6060",
+  "최설아": "5050",
+  "황이솔": "4040"
+};
+
+
+function setBackground(name){ screen.style.backgroundImage = `url('${name}.jpg')`; }
+function clearScreen(){ screen.innerHTML = ''; }
+
+function createClickableArea(x1,y1,x2,y2,onClick){
+  const d = document.createElement('div');
+  d.className = 'clickable';
+  d.style.left = x1 + 'px';
+  d.style.top = y1 + 'px';
+  d.style.width = (x2-x1) + 'px';
+  d.style.height = (y2-y1) + 'px';
+  d.onclick = onClick;
+  screen.appendChild(d);
+}
+
+function loadWait(){
+  clearScreen();
+  setBackground('bg_wait');
+  const cover = document.createElement('div');
+  cover.style.position='absolute'; cover.style.left='0'; cover.style.top='0';
+  cover.style.width='100%'; cover.style.height='100%'; cover.style.cursor='pointer';
+  cover.onclick = () => { cover.remove(); loadName(); };
+  screen.appendChild(cover);
+}
+
+function loadName(){
+  clearScreen();
+  setBackground('bg_name');
+  const nameContainer = document.createElement('div');
+  nameContainer.id = 'nameList';
+  userList.forEach(name=>{
+    const btn = document.createElement('button');
+    btn.textContent = name;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedName = name;
+      loadPassword();
+    });
+    nameContainer.appendChild(btn);
+  });
+  screen.appendChild(nameContainer);
+}
+
+function loadPassword(){
+  clearScreen();
+  setBackground('bg_password');
+  password = '';
+  const coords = [
+    [248,712],[450,712],[648,712],[850,712]
+  ];
+  const wrap = document.createElement('div');
+  wrap.id = 'passwordBoxes';
+  coords.forEach(c=>{
+    const b = document.createElement('div');
+    b.className = 'pw-box';
+    b.style.left = c[0] + 'px';
+    b.style.top = c[1] + 'px';
+    wrap.appendChild(b);
+  });
+  screen.appendChild(wrap);
+  createKeypad(loadPassword, 1264, 172);
+  createClickableArea(1327,782,1589,948, checkPassword);
+  createClickableArea(1655,784,1917,940, resetPassword);
+
+ // 🔙 뒤로가기 버튼
+  const backBtn = document.createElement('button');
+  backBtn.textContent = "뒤로가기";
+  backBtn.style.position = "absolute";
+  backBtn.style.left = "80px";
+  backBtn.style.bottom = "80px";
+  backBtn.style.width = "180px";
+  backBtn.style.height = "70px";
+  backBtn.style.fontSize = "28px";
+  backBtn.style.fontWeight = "bold";
+  backBtn.style.border = "none";
+  backBtn.style.borderRadius = "12px";
+  backBtn.style.background = "rgba(255,255,255,0.85)";
+  backBtn.style.cursor = "pointer";
+  backBtn.onmouseenter = () => backBtn.style.background = "#ffeb3b";
+  backBtn.onmouseleave = () => backBtn.style.background = "rgba(255,255,255,0.85)";
+  backBtn.onclick = loadName;
+  screen.appendChild(backBtn);
+
+  const msg = document.createElement('div');
+  msg.id = 'message';
+  const leftEdge = coords[0][0];
+  const rightEdge = coords[3][0] + 140;
+  const centerX = (leftEdge + rightEdge) / 2;
+  msg.style.left = centerX + 'px';
+  msg.style.transform = 'translateX(-50%)';
+  msg.style.top = (coords[0][1] + 160) + 'px';
+  screen.appendChild(msg);
+}
+
+function createKeypad(context, x, y){
+  const existing = document.getElementById('keypad');
+  if(existing) existing.remove();
+  const k = document.createElement('div');
+  k.id = 'keypad';
+  k.style.left = x + 'px';
+  k.style.top = y + 'px';
+  const keys = ['1','2','3','4','5','6','7','8','9','0','←','지움'];
+  keys.forEach(x=>{
+    const b = document.createElement('button');
+    b.textContent = x;
+    b.onclick = () => handleKeyPress(x, context);
+    k.appendChild(b);
+  });
+  screen.appendChild(k);
+}
+
+function handleKeyPress(k, context){
+  if(context===loadPassword){
+    const msg = document.getElementById('message');
+    msg.innerHTML = '';
+    if(k==='←') password = password.slice(0,-1);
+    else if(k==='지움') password = '';
+    else if(password.length<4 && !isNaN(k)) password += k;
+    const pwBoxes = document.querySelectorAll('.pw-box');
+    pwBoxes.forEach((b,i)=>b.textContent=password[i]||'');
+  }
+  if(context===loadInput){
+    if(k==='←') amount = amount.slice(0,-1);
+    else if(k==='지움') amount = '';
+    else if(!isNaN(k)) amount += k;
+    document.getElementById('display').textContent = amount;
+  }
+}
+
+function checkPassword(){
+  const msg = document.getElementById('message');
+  if(password===passwords[selectedName]) loadSelect();
+  else {
+    msg.innerHTML = '비밀번호가 틀렸습니다!<br>다시 입력해주세요.';
+    msg.classList.remove('blink');
+    void msg.offsetWidth;
+    msg.classList.add('blink');
+  }
+}
+
+function resetPassword(){
+  password='';
+  document.querySelectorAll('.pw-box').forEach(b=>b.textContent='');
+  document.getElementById('message').innerHTML='';
+}
+
+function loadSelect(){
+  clearScreen();
+  setBackground('bg_select');
+
+  // ✅ 선택된 이름 표시 (크기 1/5, "님" 제거, 오른쪽으로 180px 이동)
+  const nameTag = document.createElement('div');
+  nameTag.textContent = selectedName;
+  nameTag.style.position = "absolute";
+  nameTag.style.left = "calc(50% + 110px)";
+  nameTag.style.top = "250px";
+  nameTag.style.transform = "translateX(-50%)";
+  nameTag.style.fontSize = "130px"; /* 기존의 1/5 */
+  nameTag.style.fontWeight = "bold";
+  nameTag.style.color = "#222";
+  nameTag.style.backgroundColor = "rgba(255,255,255,0.7)";
+  nameTag.style.borderRadius = "20px";
+  nameTag.style.padding = "6px 20px";
+  nameTag.style.textAlign = "center";
+  screen.appendChild(nameTag);
+
+  createClickableArea(450,580,850,870,loadInput);
+  createClickableArea(870,580,1250,870,loadInput);
+}
+
+function loadInput(){
+  clearScreen();
+  setBackground('bg_input');
+  amount='';
+  const disp = document.createElement('div');
+  disp.id = 'display';
+  disp.style.left = (611+190)+'px';
+  disp.style.top = (290)+'px';
+  disp.style.width = (1232-536)+'px';
+  disp.style.height = (592-318)+'px';
+  disp.style.lineHeight = (592-318)+'px';
+  screen.appendChild(disp);
+  createKeypad(loadInput, 190, 310);
+  createClickableArea(649,679,988 ,876,loadNotice);
+  createClickableArea(1074,682,1414,878,()=>{ amount=''; disp.textContent=''; });
+}
+
+function loadNotice(){
+  clearScreen();
+  setBackground('bg_notice');
+  setTimeout(loadEnd,7000);
+}
+
+function loadEnd(){
+  clearScreen();
+  setBackground('bg_end');
+  setTimeout(loadWait,10000);
+}
+loadWait();
+</script>
+</body>
+</html>
