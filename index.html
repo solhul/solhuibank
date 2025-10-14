@@ -2,27 +2,20 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>한빛은행 시뮬레이터 - iPad Fixed</title>
 <style>
   html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     overflow: hidden;
-    background-color: #004d40;
-  }
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #004d40;
+    background: black;
   }
 
-  body {
+  #wrapper {
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,63 +23,13 @@
 
   #screen {
     position: relative;
-    width: 100vw;
-    height: 100vh;
-    background-size: contain;
-    background-repeat: no-repeat;
+    width: 1920px;
+    height: 1080px;
+    background-size: cover;
     background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    transform-origin: top left;
   }
 
-  /* 중앙 정렬을 유지하기 위해 요소를 % 단위로 배치 */
-  .input-area, .keypad, .buttons {
-    position: absolute;
-    transform: translate(-50%, -50%);
-  }
-
-  .input-area {
-    top: 50%;
-    left: 50%;
-    width: 60%;
-    text-align: center;
-  }
-
-  .keypad {
-    bottom: 10%;
-    left: 50%;
-  }
-
-  .buttons {
-    bottom: 5%;
-    left: 50%;
-  }
-
-  input, button {
-    font-size: 2vw;
-    padding: 1vw;
-    border: none;
-    border-radius: 1vw;
-  }
-
-  button {
-    background-color: #fdd835;
-    color: #004d40;
-    font-weight: bold;
-  }
-
-  @media (orientation: portrait) {
-    input, button {
-      font-size: 3vw;
-    }
-  }
-</style>
-<title>한빛은행 시뮬레이터 - FINAL (이름크기조정)</title>
-<style>
-  body { margin: 0; overflow: hidden; background-color: black; }
-  #screen { position: relative; width: 1920px; height: 1080px; background-size: cover; background-position: center; }
   .clickable { position: absolute; cursor: pointer; background: rgba(0,0,0,0); }
 
   /* 이름 선택 박스 */
@@ -181,7 +124,9 @@
 </style>
 </head>
 <body>
-<div id="screen"></div>
+<div id="wrapper">
+  <div id="screen"></div>
+</div>
 
 <script>
 const screen = document.getElementById('screen');
@@ -195,34 +140,7 @@ const userList = [
   "안서현","왕동규","유서원","유하준","이서은","임단비",
   "장건우","장하나","정루아","정윤","정하윤","최설아","황이솔"
 ];
-const passwords = {
-  "강유진": "1234",
-  "김아랑": "5678",
-  "김연호": "1357",
-  "김유나": "2468",
-  "김채아": "1111",
-  "김하린": "2222",
-  "박나은": "3333",
-  "박시아": "4444",
-  "박재이": "5555",
-  "박지한": "6666",
-  "서시안": "7777",
-  "신서율": "8888",
-  "안서현": "9999",
-  "왕동규": "0000",
-  "유서원": "1212",
-  "유하준": "3434",
-  "이서은": "5656",
-  "임단비": "7878",
-  "장건우": "9090",
-  "장하나": "9990",
-  "정루아": "8080",
-  "정윤": "7070",
-  "정하윤": "6060",
-  "최설아": "5050",
-  "황이솔": "4040"
-};
-
+const passwords = Object.fromEntries(userList.map(n => [n, "0000"]));
 
 function setBackground(name){ screen.style.backgroundImage = `url('${name}.jpg')`; }
 function clearScreen(){ screen.innerHTML = ''; }
@@ -287,22 +205,18 @@ function loadPassword(){
   createClickableArea(1327,782,1589,948, checkPassword);
   createClickableArea(1655,784,1917,940, resetPassword);
 
- // 🔙 뒤로가기 버튼
   const backBtn = document.createElement('button');
   backBtn.textContent = "뒤로가기";
-  backBtn.style.position = "absolute";
-  backBtn.style.left = "80px";
-  backBtn.style.bottom = "80px";
-  backBtn.style.width = "180px";
-  backBtn.style.height = "70px";
-  backBtn.style.fontSize = "28px";
-  backBtn.style.fontWeight = "bold";
-  backBtn.style.border = "none";
-  backBtn.style.borderRadius = "12px";
-  backBtn.style.background = "rgba(255,255,255,0.85)";
-  backBtn.style.cursor = "pointer";
-  backBtn.onmouseenter = () => backBtn.style.background = "#ffeb3b";
-  backBtn.onmouseleave = () => backBtn.style.background = "rgba(255,255,255,0.85)";
+  backBtn.style.position = 'absolute';
+  backBtn.style.left = '80px';
+  backBtn.style.bottom = '80px';
+  backBtn.style.width = '200px';
+  backBtn.style.height = '80px';
+  backBtn.style.fontSize = '28px';
+  backBtn.style.borderRadius = '16px';
+  backBtn.style.border = 'none';
+  backBtn.style.background = '#ffeb3b';
+  backBtn.style.cursor = 'pointer';
   backBtn.onclick = loadName;
   screen.appendChild(backBtn);
 
@@ -372,23 +286,14 @@ function resetPassword(){
 function loadSelect(){
   clearScreen();
   setBackground('bg_select');
-
-  // ✅ 선택된 이름 표시 (크기 1/5, "님" 제거, 오른쪽으로 180px 이동)
-  const nameTag = document.createElement('div');
-  nameTag.textContent = selectedName;
-  nameTag.style.position = "absolute";
-  nameTag.style.left = "calc(50% + 110px)";
-  nameTag.style.top = "250px";
-  nameTag.style.transform = "translateX(-50%)";
-  nameTag.style.fontSize = "130px"; /* 기존의 1/5 */
-  nameTag.style.fontWeight = "bold";
-  nameTag.style.color = "#222";
-  nameTag.style.backgroundColor = "rgba(255,255,255,0.7)";
-  nameTag.style.borderRadius = "20px";
-  nameTag.style.padding = "6px 20px";
-  nameTag.style.textAlign = "center";
-  screen.appendChild(nameTag);
-
+  const nameText = document.createElement('div');
+  nameText.textContent = selectedName;
+  nameText.style.position = 'absolute';
+  nameText.style.left = '850px';
+  nameText.style.top = '310px';
+  nameText.style.fontSize = '38px';
+  nameText.style.fontWeight = 'bold';
+  screen.appendChild(nameText);
   createClickableArea(450,580,850,870,loadInput);
   createClickableArea(870,580,1250,870,loadInput);
 }
@@ -405,7 +310,7 @@ function loadInput(){
   disp.style.height = (592-318)+'px';
   disp.style.lineHeight = (592-318)+'px';
   screen.appendChild(disp);
-  createKeypad(loadInput, 190, 310);
+  createKeypad(loadInput, 200, 270);
   createClickableArea(649,679,988 ,876,loadNotice);
   createClickableArea(1074,682,1414,878,()=>{ amount=''; disp.textContent=''; });
 }
@@ -421,10 +326,24 @@ function loadEnd(){
   setBackground('bg_end');
   setTimeout(loadWait,10000);
 }
-loadWait();
+
+function scaleToFit(){
+  const screen = document.getElementById('screen');
+  const scaleX = window.innerWidth / 1920;
+  const scaleY = window.innerHeight / 1080;
+  const scale = Math.min(scaleX, scaleY);
+  screen.style.transform = `scale(${scale}) translate(-50%, -50%)`;
+  screen.style.position = 'absolute';
+  screen.style.left = '50%';
+  screen.style.top = '50%';
+}
+
+window.addEventListener('resize', scaleToFit);
+window.addEventListener('orientationchange', scaleToFit);
+window.addEventListener('load', () => {
+  loadWait();
+  scaleToFit();
+});
 </script>
 </body>
 </html>
-
-
-
