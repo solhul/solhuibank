@@ -7,18 +7,37 @@
   html, body {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
+    height: 100%;
     overflow: hidden;
-    background-color: black;
+    background-color: #004d40;
   }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   #screen {
     position: relative;
-    width: 100%;
-    height: 100%;
-    background-size: contain;
-    background-position: center;
+    width: 100vw;
+    height: 100vh;
+    background-size: contain; /* 핵심: 비율 유지하면서 전체 표시 */
     background-repeat: no-repeat;
+    background-position: center center;
+    transform-origin: center center;
+  }
+
+  @media (orientation: portrait) {
+    #screen {
+      transform: rotate(0deg);
+    }
+  }
+
+  @media (orientation: landscape) {
+    #screen {
+      transform: rotate(0deg);
+    }
   }
 </style>
 <title>한빛은행 시뮬레이터 - FINAL (이름크기조정)</title>
@@ -363,4 +382,5 @@ loadWait();
 </script>
 </body>
 </html>
+
 
