@@ -140,33 +140,7 @@ const userList = [
   "안서현","왕동규","유서원","유하준","이서은","임단비",
   "장건우","장하나","정루아","정윤","정하윤","최설아","황이솔"
 ];
-const passwords = {
-  "강유진": "1234",
-  "김아랑": "5678",
-  "김연호": "1357",
-  "김유나": "2468",
-  "김채아": "1111",
-  "김하린": "2222",
-  "박나은": "3333",
-  "박시아": "4444",
-  "박재이": "5555",
-  "박지한": "6666",
-  "서시안": "7777",
-  "신서율": "8888",
-  "안서현": "9999",
-  "왕동규": "0000",
-  "유서원": "1212",
-  "유하준": "3434",
-  "이서은": "5656",
-  "임단비": "7878",
-  "장건우": "9090",
-  "장하나": "9990",
-  "정루아": "8080",
-  "정윤": "7070",
-  "정하윤": "6060",
-  "최설아": "5050",
-  "황이솔": "4040"
-};
+const passwords = Object.fromEntries(userList.map(n => [n, "0000"]));
 
 function setBackground(name){ screen.style.backgroundImage = `url('${name}.jpg')`; }
 function clearScreen(){ screen.innerHTML = ''; }
@@ -317,9 +291,7 @@ function loadSelect(){
   nameText.style.position = 'absolute';
   nameText.style.left = '850px';
   nameText.style.top = '310px';
-  nameText.style.fontSize = '130px';
-  nameTag.style.padding = "6px 20px";     // 여백 줄이기
-  nameTag.style.borderRadius = "12px";
+  nameText.style.fontSize = '38px';
   nameText.style.fontWeight = 'bold';
   screen.appendChild(nameText);
   createClickableArea(450,580,850,870,loadInput);
@@ -338,7 +310,7 @@ function loadInput(){
   disp.style.height = (592-318)+'px';
   disp.style.lineHeight = (592-318)+'px';
   screen.appendChild(disp);
-  createKeypad(loadInput, 190, 310);
+  createKeypad(loadInput, 200, 270);
   createClickableArea(649,679,988 ,876,loadNotice);
   createClickableArea(1074,682,1414,878,()=>{ amount=''; disp.textContent=''; });
 }
@@ -375,5 +347,3 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
-
-
