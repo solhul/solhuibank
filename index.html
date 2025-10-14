@@ -340,7 +340,7 @@ function loadInput(){
   disp.style.height = (592-318)+'px';
   disp.style.lineHeight = (592-318)+'px';
   screen.appendChild(disp);
-  createKeypad(loadInput, 200, 270);
+  createKeypad(loadInput, 190, 310);
   createClickableArea(649,679,988 ,876,loadNotice);
   createClickableArea(1074,682,1414,878,()=>{ amount=''; disp.textContent=''; });
 }
@@ -377,5 +377,6 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
+
 
 
